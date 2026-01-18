@@ -24,15 +24,15 @@
         </div>
 
         <div class="grid grid-cols-2 gap-3 pt-4 border-t border-slate-700">
-            <div class="text-center"><p class="text-[9px] text-slate-400">RODRIGO (35%)</p><p id="resR" class="text-md font-bold text-green-400">$0.00</p></div>
-            <div class="text-center"><p class="text-[9px] text-slate-400">DAYANA (35%)</p><p id="resD" class="text-md font-bold text-green-400">$0.00</p></div>
-            <div class="text-center"><p class="text-[9px] text-yellow-500">STAFF ($18/h)</p><p id="resStaff" class="text-md font-bold text-yellow-500">$0.00</p></div>
-            <div class="text-center"><p class="text-[9px] text-blue-400">EMP. NETO</p><p id="resNeto" class="text-md font-bold text-blue-400">$0.00</p></div>
+            <div class="text-center"><p class="text-[9px] text-slate-400 uppercase">Rodrigo (35%)</p><p id="resR" class="text-md font-bold text-green-400">$0.00</p></div>
+            <div class="text-center"><p class="text-[9px] text-slate-400 uppercase">Dayana (35%)</p><p id="resD" class="text-md font-bold text-green-400">$0.00</p></div>
+            <div class="text-center"><p class="text-[9px] text-yellow-500 uppercase font-bold">Staff ($18/h)</p><p id="resStaff" class="text-md font-bold text-yellow-500">$0.00</p></div>
+            <div class="text-center"><p class="text-[9px] text-blue-400 uppercase font-bold">Empresa Neto</p><p id="resNeto" class="text-md font-bold text-blue-400">$0.00</p></div>
         </div>
-        <button onclick="guardarRegistro()" id="btnGuardar" class="w-full bg-blue-600 py-4 rounded-xl font-bold mt-2 shadow-lg active:scale-95 transition-all">GUARDAR REGISTRO</button>
+        <button onclick="guardarRegistro()" id="btnGuardar" class="w-full bg-blue-600 py-4 rounded-xl font-bold mt-2 shadow-lg active:scale-95 transition-all uppercase">Guardar Registro</button>
     </div>
 
-    <h2 class="text-sm font-bold mb-2 text-slate-400 ml-2 uppercase tracking-tighter">Totales Acumulados (Historial)</h2>
+    <h2 class="text-sm font-bold mb-2 text-slate-400 ml-2 uppercase tracking-tighter">Totales Acumulados</h2>
     <div class="grid grid-cols-2 gap-3 mb-8">
         <div class="bg-green-900/30 p-4 rounded-2xl border border-green-500/50 text-center">
             <p class="text-[10px] text-green-400 font-bold uppercase">Total Rodrigo</p>
@@ -64,6 +64,11 @@
 
         window.onload = mostrarHistorial;
 
+        // Función para poner comas en los miles
+        function formatoMoneda(valor) {
+            return '$' + valor.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
         function calcularPrevio() {
             const ing = parseFloat(document.getElementById('ingresos').value) || 0;
             const gas = parseFloat(document.getElementById('gastosDiarios').value) || 0;
@@ -75,10 +80,10 @@
             const cadaUno = (neta * 0.70) / 2;
             const eNeto = (neta * 0.30) - inv;
 
-            document.getElementById('resR').innerText = '$' + cadaUno.toFixed(2);
-            document.getElementById('resD').innerText = '$' + cadaUno.toFixed(2);
-            document.getElementById('resStaff').innerText = '$' + pStaff.toFixed(2);
-            document.getElementById('resNeto').innerText = '$' + eNeto.toFixed(2);
+            document.getElementById('resR').innerText = formatoMoneda(cadaUno);
+            document.getElementById('resD').innerText = formatoMoneda(cadaUno);
+            document.getElementById('resStaff').innerText = formatoMoneda(pStaff);
+            document.getElementById('resNeto').innerText = formatoMoneda(eNeto);
         }
 
         function guardarRegistro() {
@@ -90,7 +95,7 @@
                 hrs: parseFloat(document.getElementById('horas').value) || 0,
                 inv: parseFloat(document.getElementById('inversion').value) || 0
             };
-            if(data.ing === 0) return alert("Ingresa el ingreso");
+            if(data.ing === 0) return alert("Ingresa el monto");
             let trabajos = JSON.parse(localStorage.getItem('elite_trabajos')) || [];
             if (index === -1) { trabajos.unshift(data); } else { trabajos[index] = data; resetBotones(); }
             localStorage.setItem('elite_trabajos', JSON.stringify(trabajos));
@@ -108,32 +113,32 @@
                 const cadaUno = (neta * 0.70) / 2;
                 const eNeto = (neta * 0.30) - t.inv;
 
-                // Sumar a los totales generales
                 sumR += cadaUno; sumD += cadaUno; sumS += pStaff; sumE += eNeto;
 
                 return `
-                <div class="bg-slate-800 p-4 rounded-xl border-l-4 border-blue-500">
+                <div class="bg-slate-800 p-4 rounded-xl border-l-4 border-blue-500 shadow-lg">
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-blue-400 font-bold text-sm">${t.fecha}</span>
-                        <span class="text-green-400 font-bold">$${t.ing.toFixed(2)}</span>
+                        <span class="text-green-400 font-bold text-lg">${formatoMoneda(t.ing)}</span>
                     </div>
                     <div class="grid grid-cols-2 gap-2 text-[10px]">
-                        <div>DUEÑOS: <b class="text-white">$${cadaUno.toFixed(2)} c/u</b></div>
-                        <div>STAFF: <b class="text-yellow-400">$${pStaff.toFixed(2)}</b></div>
-                        <div class="col-span-2">EMPRESA NETO: <b class="text-blue-300">$${eNeto.toFixed(2)}</b></div>
+                        <div class="bg-slate-700/50 p-2 rounded">DUEÑOS: <b class="text-white">${formatoMoneda(cadaUno)} c/u</b></div>
+                        <div class="bg-slate-700/50 p-2 rounded">STAFF: <b class="text-yellow-400">${formatoMoneda(pStaff)}</b></div>
+                        <div class="bg-slate-700/50 p-2 rounded col-span-2 text-center border border-slate-600">
+                            EMPRESA NETO: <b class="text-blue-300 font-bold">${formatoMoneda(eNeto)}</b>
+                        </div>
                     </div>
-                    <div class="flex gap-4 mt-2">
-                        <button onclick="editarRegistro(${index})" class="text-[10px] text-blue-400 font-bold">✏️ Editar</button>
-                        <button onclick="borrarUno(${index})" class="text-[10px] text-red-500 font-bold">🗑️ Borrar</button>
+                    <div class="flex gap-6 mt-3 pt-2 border-t border-slate-700/50">
+                        <button onclick="editarRegistro(${index})" class="text-[10px] text-blue-400 font-bold uppercase">✏️ Editar</button>
+                        <button onclick="borrarUno(${index})" class="text-[10px] text-red-500 font-bold uppercase opacity-60">🗑️ Borrar</button>
                     </div>
                 </div>`;
             }).join('');
 
-            // Actualizar los 4 cuadros de totales acumulados
-            document.getElementById('totalRodrigo').innerText = '$' + sumR.toFixed(2);
-            document.getElementById('totalDayana').innerText = '$' + sumD.toFixed(2);
-            document.getElementById('totalStaff').innerText = '$' + sumS.toFixed(2);
-            document.getElementById('totalEmpresa').innerText = '$' + sumE.toFixed(2);
+            document.getElementById('totalRodrigo').innerText = formatoMoneda(sumR);
+            document.getElementById('totalDayana').innerText = formatoMoneda(sumD);
+            document.getElementById('totalStaff').innerText = formatoMoneda(sumS);
+            document.getElementById('totalEmpresa').innerText = formatoMoneda(sumE);
         }
 
         function editarRegistro(index) {
@@ -160,7 +165,7 @@
         function limpiar() { ids.forEach(id => document.getElementById(id).value = ""); calcularPrevio(); }
 
         function borrarUno(index) {
-            if(confirm("¿Borrar registro?")) {
+            if(confirm("¿Borrar este registro?")) {
                 let trabajos = JSON.parse(localStorage.getItem('elite_trabajos'));
                 trabajos.splice(index, 1);
                 localStorage.setItem('elite_trabajos', JSON.stringify(trabajos));
