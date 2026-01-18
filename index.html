@@ -3,42 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Cleaners Admin</title>
+    <title>Contabilidad Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-white p-5">
-    <h1 class="text-2xl font-bold mb-6 text-center text-blue-400">ELITE CLEANERS APP</h1>
-    
-    <div class="space-y-4 bg-slate-800 p-6 rounded-2xl shadow-xl">
-        <input type="number" id="ingresos" class="w-full bg-slate-700 p-4 rounded-xl" placeholder="Total Ingresos ($)">
-        <input type="number" id="gastos" class="w-full bg-slate-700 p-4 rounded-xl" placeholder="Gastos ($)">
-        <input type="number" id="horas" class="w-full bg-slate-700 p-4 rounded-xl" placeholder="Horas Trabajadas">
-
-        <div class="grid grid-cols-2 gap-4 border-t border-slate-700 pt-4 mt-4">
-            <div class="text-center bg-slate-700 p-3 rounded-lg">
-                <p class="text-xs text-slate-400">PAGO RODRIGO</p>
-                <p id="pagoR" class="text-xl font-bold text-green-400">$0.00</p>
+    <h1 class="text-xl font-bold mb-4 text-blue-400">CONTABILIDAD ELITE</h1>
+    <div class="space-y-3 bg-slate-800 p-5 rounded-2xl shadow-lg">
+        <input type="number" id="ingresos" class="w-full bg-slate-700 p-3 rounded-lg" placeholder="Ingreso Total ($)">
+        <input type="number" id="gastos" class="w-full bg-slate-700 p-3 rounded-lg" placeholder="Gastos (Cena/Walmart) ($)">
+        <input type="number" id="horas" class="w-full bg-slate-700 p-3 rounded-lg" placeholder="Horas Totales">
+        
+        <div class="grid grid-cols-2 gap-3 pt-4">
+            <div class="bg-slate-700 p-3 rounded-lg text-center">
+                <p class="text-[10px] text-slate-400">PAGO RODRIGO</p>
+                <p id="pagoR" class="text-lg font-bold text-green-400">$0.00</p>
             </div>
-            <div class="text-center bg-slate-700 p-3 rounded-lg">
-                <p class="text-xs text-slate-400">PAGO DAYANA</p>
-                <p id="pagoD" class="text-xl font-bold text-green-400">$0.00</p>
+            <div class="bg-slate-700 p-3 rounded-lg text-center">
+                <p class="text-[10px] text-slate-400">PAGO DAYANA</p>
+                <p id="pagoD" class="text-lg font-bold text-green-400">$0.00</p>
             </div>
         </div>
-
-        <button onclick="calcular()" class="w-full bg-blue-600 py-4 rounded-xl font-bold">CALCULAR PAGOS</button>
+        <button onclick="calcular()" class="w-full bg-blue-600 py-3 rounded-xl font-bold mt-2">CALCULAR</button>
     </div>
 
     <script>
         function calcular() {
-            const ingresos = parseFloat(document.getElementById('ingresos').value) || 0;
-            const gastos = parseFloat(document.getElementById('gastos').value) || 0;
-            
-            // Lógica de tu tabla: (Ingresos - Gastos) * 70% dividido entre 2
-            const gananciaNeta = ingresos - gastos;
-            const pagoCadaUno = (gananciaNeta * 0.70) / 2;
-            
-            document.getElementById('pagoR').innerText = '$' + pagoCadaUno.toFixed(2);
-            document.getElementById('pagoD').innerText = '$' + pagoCadaUno.toFixed(2);
+            const ing = parseFloat(document.getElementById('ingresos').value) || 0;
+            const gas = parseFloat(document.getElementById('gastos').value) || 0;
+            // Tu fórmula: (Ingresos - Gastos) * 70% / 2
+            const neta = ing - gas;
+            const cadaUno = (neta * 0.70) / 2;
+            document.getElementById('pagoR').innerText = '$' + cadaUno.toFixed(2);
+            document.getElementById('pagoD').innerText = '$' + cadaUno.toFixed(2);
         }
     </script>
 </body>
