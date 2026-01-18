@@ -3,38 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contabilidad Elite</title>
+    <title>Contabilidad Elite Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 text-white p-5">
-    <h1 class="text-xl font-bold mb-4 text-blue-400">CONTABILIDAD ELITE</h1>
+<body class="bg-slate-900 text-white p-4">
+    <h1 class="text-xl font-bold mb-4 text-center text-blue-400">ELITE CLEANERS - SISTEMA COMPLETO</h1>
+    
     <div class="space-y-3 bg-slate-800 p-5 rounded-2xl shadow-lg">
         <input type="number" id="ingresos" class="w-full bg-slate-700 p-3 rounded-lg" placeholder="Ingreso Total ($)">
-        <input type="number" id="gastos" class="w-full bg-slate-700 p-3 rounded-lg" placeholder="Gastos (Cena/Walmart) ($)">
+        <input type="number" id="gastosDiarios" class="w-full bg-slate-700 p-3 rounded-lg" placeholder="Gastos (Cena/Almuerzo) ($)">
         <input type="number" id="horas" class="w-full bg-slate-700 p-3 rounded-lg" placeholder="Horas Totales">
-        
-        <div class="grid grid-cols-2 gap-3 pt-4">
+        <input type="number" id="inversion" class="w-full bg-slate-700 p-3 rounded-lg" placeholder="Inversión (Lowe's/Walmart) ($)">
+
+        <div class="grid grid-cols-2 gap-3 pt-4 border-t border-slate-700">
             <div class="bg-slate-700 p-3 rounded-lg text-center">
-                <p class="text-[10px] text-slate-400">PAGO RODRIGO</p>
+                <p class="text-[10px] text-slate-400">PAGO RODRIGO (35%)</p>
                 <p id="pagoR" class="text-lg font-bold text-green-400">$0.00</p>
             </div>
             <div class="bg-slate-700 p-3 rounded-lg text-center">
-                <p class="text-[10px] text-slate-400">PAGO DAYANA</p>
+                <p class="text-[10px] text-slate-400">PAGO DAYANA (35%)</p>
                 <p id="pagoD" class="text-lg font-bold text-green-400">$0.00</p>
             </div>
+            <div class="bg-slate-700 p-3 rounded-lg text-center">
+                <p class="text-[10px] text-slate-400 text-yellow-400">PAGO GERAL (18%)</p>
+                <p id="pagoGeral" class="text-lg font-bold text-yellow-400">$0.00</p>
+            </div>
+            <div class="bg-slate-700 p-3 rounded-lg text-center border-2 border-blue-500">
+                <p class="text-[10px] text-blue-400">EMPRESA NETO</p>
+                <p id="empresaNeto" class="text-lg font-bold text-blue-400">$0.00</p>
+            </div>
         </div>
-        <button onclick="calcular()" class="w-full bg-blue-600 py-3 rounded-xl font-bold mt-2">CALCULAR</button>
+
+        <button onclick="calcularTodo()" class="w-full bg-blue-600 py-4 rounded-xl font-bold mt-2">CALCULAR CONTABILIDAD</button>
     </div>
 
     <script>
-        function calcular() {
+        function calcularTodo() {
             const ing = parseFloat(document.getElementById('ingresos').value) || 0;
-            const gas = parseFloat(document.getElementById('gastos').value) || 0;
-            // Tu fórmula: (Ingresos - Gastos) * 70% / 2
+            const gas = parseFloat(document.getElementById('gastosDiarios').value) || 0;
+            const hrs = parseFloat(document.getElementById('horas').value) || 0;
+            const inv = parseFloat(document.getElementById('inversion').value) || 0;
+
+            // 1. Pago Geral (Horas * 18)
+            const pGeral = hrs * 18;
+            
+            // 2. Ganancia Neta (Ingresos - Gastos Diarios)
             const neta = ing - gas;
-            const cadaUno = (neta * 0.70) / 2;
+            
+            // 3. 70% Dueños (Rodrigo y Dayana)
+            const pagoDueñosTotal = neta * 0.70;
+            const cadaUno = pagoDueñosTotal / 2;
+            
+            // 4. 30% Empresa y Neto Final (restando inversión)
+            const treintaEmpresa = neta * 0.30;
+            const eNeto = treintaEmpresa - inv;
+
+            // Mostrar en pantalla
             document.getElementById('pagoR').innerText = '$' + cadaUno.toFixed(2);
             document.getElementById('pagoD').innerText = '$' + cadaUno.toFixed(2);
+            document.getElementById('pagoGeral').innerText = '$' + pGeral.toFixed(2);
+            document.getElementById('empresaNeto').innerText = '$' + eNeto.toFixed(2);
         }
     </script>
 </body>
