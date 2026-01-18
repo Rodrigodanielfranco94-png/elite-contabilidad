@@ -12,10 +12,18 @@
     
     <div class="space-y-3 bg-slate-800 p-5 rounded-2xl shadow-xl mb-6 border border-slate-700">
         <input type="hidden" id="editIndex" value="-1">
-        <div class="flex flex-col gap-1">
-            <label class="text-[10px] text-slate-400 ml-1 uppercase font-bold">Fecha del Trabajo</label>
-            <input type="date" id="fecha" class="w-full bg-slate-700 p-3 rounded-lg text-white border border-slate-600 outline-none">
+        
+        <div class="grid grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-slate-400 ml-1 uppercase font-bold">Fecha del Trabajo</label>
+                <input type="date" id="fecha" class="w-full bg-slate-700 p-3 rounded-lg text-white border border-slate-600 outline-none">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] text-slate-400 ml-1 uppercase font-bold">Nombre del Cliente</label>
+                <input type="text" id="cliente" class="w-full bg-slate-700 p-3 rounded-lg text-white border border-slate-600 outline-none" placeholder="Nombre">
+            </div>
         </div>
+
         <div class="grid grid-cols-2 gap-3">
             <input type="number" id="ingresos" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Ingreso ($)">
             <input type="number" id="gastosDiarios" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Gasto Comida ($)">
@@ -26,7 +34,7 @@
         <div class="grid grid-cols-2 gap-3 pt-4 border-t border-slate-700">
             <div class="text-center"><p class="text-[9px] text-slate-400 uppercase">Rodrigo (35%)</p><p id="resR" class="text-md font-bold text-green-400">$0.00</p></div>
             <div class="text-center"><p class="text-[9px] text-slate-400 uppercase">Dayana (35%)</p><p id="resD" class="text-md font-bold text-green-400">$0.00</p></div>
-            <div class="text-center"><p class="text-[9px] text-yellow-500 uppercase font-bold">Staff ($18/h)</p><p id="resStaff" class="text-md font-bold text-yellow-500">$0.00</p></div>
+            <div class="text-center"><p class="text-[9px] text-yellow-500 uppercase font-bold">Staff ($16/h)</p><p id="resStaff" class="text-md font-bold text-yellow-500">$0.00</p></div>
             <div class="text-center"><p class="text-[9px] text-blue-400 uppercase font-bold">Empresa Neto</p><p id="resNeto" class="text-md font-bold text-blue-400">$0.00</p></div>
         </div>
         <button onclick="guardarRegistro()" id="btnGuardar" class="w-full bg-blue-600 py-4 rounded-xl font-bold mt-2 shadow-lg active:scale-95 transition-all uppercase">Guardar Registro</button>
@@ -59,14 +67,13 @@
     <div id="historial" class="space-y-3"></div>
 
     <script>
-        const ids = ["ingresos", "gastosDiarios", "horas", "inversion", "fecha"];
+        const ids = ["ingresos", "gastosDiarios", "horas", "inversion", "fecha", "cliente"];
         ids.forEach(id => document.getElementById(id).addEventListener('input', calcularPrevio));
 
         window.onload = function() {
             mostrarHistorial();
-            // Evitar pérdida accidental por cierre de pestaña
             window.onbeforeunload = function() {
-                return "¿Has exportado tus datos hoy? Podrías perder cambios no guardados.";
+                return "¿Has exportado tus datos hoy?";
             };
         };
 
@@ -80,7 +87,7 @@
             const hrs = parseFloat(document.getElementById('horas').value) || 0;
             const inv = parseFloat(document.getElementById('inversion').value) || 0;
 
-            const pStaff = hrs * 18;
+            const pStaff = hrs * 16; // Tarifa actualizada a 16
             const neta = ing - gas;
             const cadaUno = (neta * 0.70) / 2;
             const eNeto = (neta * 0.30) - inv;
@@ -95,6 +102,7 @@
             const index = parseInt(document.getElementById('editIndex').value);
             const data = {
                 fecha: document.getElementById('fecha').value || new Date().toISOString().split('T')[0],
+                cliente: document.getElementById('cliente').value || "N/A",
                 ing: parseFloat(document.getElementById('ingresos').value) || 0,
                 gas: parseFloat(document.getElementById('gastosDiarios').value) || 0,
                 hrs: parseFloat(document.getElementById('horas').value) || 0,
@@ -126,7 +134,7 @@
                 lista.innerHTML = '<p class="text-center text-slate-500 text-sm py-10 italic">No hay registros guardados aún.</p>';
             } else {
                 lista.innerHTML = trabajos.map((t, index) => {
-                    const pStaff = t.hrs * 18;
+                    const pStaff = t.hrs * 16; // Tarifa actualizada a 16
                     const neta = t.ing - t.gas;
                     const cadaUno = (neta * 0.70) / 2;
                     const eNeto = (neta * 0.30) - t.inv;
@@ -135,8 +143,11 @@
 
                     return `
                     <div class="bg-slate-800 p-4 rounded-xl border-l-4 border-blue-500 shadow-lg">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-blue-400 font-bold text-sm">${t.fecha}</span>
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex flex-col">
+                                <span class="text-blue-400 font-bold text-sm">${t.fecha}</span>
+                                <span class="text-white text-[11px] font-medium italic">Cliente: ${t.cliente}</span>
+                            </div>
                             <span class="text-green-400 font-bold text-lg">${formatoMoneda(t.ing)}</span>
                         </div>
                         <div class="grid grid-cols-2 gap-2 text-[10px]">
@@ -164,6 +175,7 @@
             let trabajos = JSON.parse(localStorage.getItem('elite_trabajos'));
             const t = trabajos[index];
             document.getElementById('fecha').value = t.fecha;
+            document.getElementById('cliente').value = t.cliente || "";
             document.getElementById('ingresos').value = t.ing;
             document.getElementById('gastosDiarios').value = t.gas;
             document.getElementById('horas').value = t.hrs;
@@ -181,10 +193,13 @@
             document.getElementById('btnGuardar').classList.replace("bg-orange-600", "bg-blue-600");
         }
 
-        function limpiar() { ids.forEach(id => document.getElementById(id).value = ""); calcularPrevio(); }
+        function limpiar() { 
+            ids.forEach(id => document.getElementById(id).value = ""); 
+            calcularPrevio(); 
+        }
 
         function borrarUno(index) {
-            if(confirm("¿Estás seguro de que quieres borrar este registro permanentemente?")) {
+            if(confirm("¿Estás seguro de que quieres borrar este registro?")) {
                 let trabajos = JSON.parse(localStorage.getItem('elite_trabajos'));
                 trabajos.splice(index, 1);
                 localStorage.setItem('elite_trabajos', JSON.stringify(trabajos));
@@ -196,9 +211,16 @@
             const trabajos = JSON.parse(localStorage.getItem('elite_trabajos')) || [];
             if(trabajos.length === 0) return alert("No hay datos para exportar");
             const data = trabajos.map(t => ({
-                "Fecha": t.fecha, "Ingresos": t.ing, "Gastos": t.gas, "Horas": t.hrs,
-                "Pago Staff": t.hrs * 18, "Pago Rodrigo": ((t.ing-t.gas)*0.7)/2,
-                "Pago Dayana": ((t.ing-t.gas)*0.7)/2, "Inversión": t.inv, "Empresa Neto": ((t.ing-t.gas)*0.3)-t.inv
+                "Fecha": t.fecha, 
+                "Cliente": t.cliente || "N/A",
+                "Ingresos": t.ing, 
+                "Gastos": t.gas, 
+                "Horas": t.hrs,
+                "Pago Staff (16/h)": t.hrs * 16, 
+                "Pago Rodrigo": ((t.ing-t.gas)*0.7)/2,
+                "Pago Dayana": ((t.ing-t.gas)*0.7)/2, 
+                "Inversión": t.inv, 
+                "Empresa Neto": ((t.ing-t.gas)*0.3)-t.inv
             }));
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
