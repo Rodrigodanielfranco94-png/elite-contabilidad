@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Cleaners Pro</title>
+    <title>Elite Cleaners Pro - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -12,46 +12,50 @@
     
     <div class="space-y-3 bg-slate-800 p-5 rounded-2xl shadow-xl mb-6 border border-slate-700">
         <input type="hidden" id="editIndex" value="-1">
-        
         <div class="flex flex-col gap-1">
-            <label class="text-[10px] text-slate-400 ml-1">FECHA DEL TRABAJO</label>
+            <label class="text-[10px] text-slate-400 ml-1 uppercase">Fecha del Trabajo</label>
             <input type="date" id="fecha" class="w-full bg-slate-700 p-3 rounded-lg text-white border border-slate-600 focus:border-blue-500 outline-none">
         </div>
-        
         <div class="grid grid-cols-2 gap-3">
             <input type="number" id="ingresos" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Ingreso ($)">
-            <input type="number" id="gastosDiarios" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Gastos Diarios ($)">
+            <input type="number" id="gastosDiarios" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Gasto Comida ($)">
             <input type="number" id="horas" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Horas Staff">
             <input type="number" id="inversion" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Inversión ($)">
         </div>
 
-        <div class="grid grid-cols-2 gap-3 pt-4">
-            <div class="bg-slate-700/50 p-3 rounded-xl text-center border border-slate-600">
-                <p class="text-[9px] text-slate-400 uppercase">Pago Rodrigo (35%)</p>
-                <p id="resR" class="text-lg font-bold text-green-400">$0.00</p>
-            </div>
-            <div class="bg-slate-700/50 p-3 rounded-xl text-center border border-slate-600">
-                <p class="text-[9px] text-slate-400 uppercase">Pago Dayana (35%)</p>
-                <p id="resD" class="text-lg font-bold text-green-400">$0.00</p>
-            </div>
-            <div class="bg-slate-700/50 p-3 rounded-xl text-center border border-slate-600">
-                <p class="text-[9px] text-yellow-500 uppercase font-bold">Pago Staff</p>
-                <p id="resStaff" class="text-lg font-bold text-yellow-500">$0.00</p>
-            </div>
-            <div class="bg-slate-700/50 p-3 rounded-xl text-center border-2 border-blue-500/50">
-                <p class="text-[9px] text-blue-400 uppercase font-bold">Empresa Neto</p>
-                <p id="resNeto" class="text-lg font-bold text-blue-400">$0.00</p>
-            </div>
+        <div class="grid grid-cols-2 gap-3 pt-4 border-t border-slate-700">
+            <div class="text-center"><p class="text-[9px] text-slate-400">RODRIGO (35%)</p><p id="resR" class="text-md font-bold text-green-400">$0.00</p></div>
+            <div class="text-center"><p class="text-[9px] text-slate-400">DAYANA (35%)</p><p id="resD" class="text-md font-bold text-green-400">$0.00</p></div>
+            <div class="text-center"><p class="text-[9px] text-yellow-500">STAFF ($18/h)</p><p id="resStaff" class="text-md font-bold text-yellow-500">$0.00</p></div>
+            <div class="text-center"><p class="text-[9px] text-blue-400">EMP. NETO</p><p id="resNeto" class="text-md font-bold text-blue-400">$0.00</p></div>
         </div>
-
-        <button onclick="guardarRegistro()" id="btnGuardar" class="w-full bg-blue-600 py-4 rounded-xl font-bold mt-2 shadow-lg active:scale-95 transition-all text-lg">GUARDAR REGISTRO</button>
+        <button onclick="guardarRegistro()" id="btnGuardar" class="w-full bg-blue-600 py-4 rounded-xl font-bold mt-2 shadow-lg active:scale-95 transition-all">GUARDAR REGISTRO</button>
     </div>
 
-    <div class="flex justify-between items-center mb-3 px-2">
+    <h2 class="text-sm font-bold mb-2 text-slate-400 ml-2 uppercase tracking-tighter">Totales Acumulados (Historial)</h2>
+    <div class="grid grid-cols-2 gap-3 mb-8">
+        <div class="bg-green-900/30 p-4 rounded-2xl border border-green-500/50 text-center">
+            <p class="text-[10px] text-green-400 font-bold uppercase">Total Rodrigo</p>
+            <p id="totalRodrigo" class="text-xl font-black text-white">$0.00</p>
+        </div>
+        <div class="bg-green-900/30 p-4 rounded-2xl border border-green-500/50 text-center">
+            <p class="text-[10px] text-green-400 font-bold uppercase">Total Dayana</p>
+            <p id="totalDayana" class="text-xl font-black text-white">$0.00</p>
+        </div>
+        <div class="bg-yellow-900/30 p-4 rounded-2xl border border-yellow-500/50 text-center">
+            <p class="text-[10px] text-yellow-500 font-bold uppercase">Total Staff</p>
+            <p id="totalStaff" class="text-xl font-black text-white">$0.00</p>
+        </div>
+        <div class="bg-blue-900/30 p-4 rounded-2xl border border-blue-500/50 text-center">
+            <p class="text-[10px] text-blue-400 font-bold uppercase">Total Empresa</p>
+            <p id="totalEmpresa" class="text-xl font-black text-white">$0.00</p>
+        </div>
+    </div>
+
+    <div class="flex justify-between items-center mb-3 px-2 border-t border-slate-800 pt-4">
         <h2 class="text-lg font-bold text-blue-300">HISTORIAL</h2>
         <button onclick="exportarExcel()" class="bg-green-600 text-[10px] px-3 py-2 rounded-lg font-bold uppercase">Exportar Excel</button>
     </div>
-
     <div id="historial" class="space-y-3"></div>
 
     <script>
@@ -86,82 +90,77 @@
                 hrs: parseFloat(document.getElementById('horas').value) || 0,
                 inv: parseFloat(document.getElementById('inversion').value) || 0
             };
-
-            if(data.ing === 0) return alert("Ingresa el monto del trabajo");
-
+            if(data.ing === 0) return alert("Ingresa el ingreso");
             let trabajos = JSON.parse(localStorage.getItem('elite_trabajos')) || [];
-            
-            if (index === -1) {
-                trabajos.unshift(data);
-            } else {
-                trabajos[index] = data;
-                document.getElementById('editIndex').value = "-1";
-                document.getElementById('btnGuardar').innerText = "GUARDAR REGISTRO";
-                document.getElementById('btnGuardar').classList.replace("bg-orange-600", "bg-blue-600");
-            }
-
+            if (index === -1) { trabajos.unshift(data); } else { trabajos[index] = data; resetBotones(); }
             localStorage.setItem('elite_trabajos', JSON.stringify(trabajos));
-            limpiar();
-            mostrarHistorial();
-        }
-
-        function editarRegistro(index) {
-            let trabajos = JSON.parse(localStorage.getItem('elite_trabajos'));
-            const t = trabajos[index];
-
-            document.getElementById('fecha').value = t.fecha;
-            document.getElementById('ingresos').value = t.ing;
-            document.getElementById('gastosDiarios').value = t.gas;
-            document.getElementById('horas').value = t.hrs;
-            document.getElementById('inversion').value = t.inv;
-            
-            document.getElementById('editIndex').value = index;
-            document.getElementById('btnGuardar').innerText = "ACTUALIZAR REGISTRO";
-            document.getElementById('btnGuardar').classList.replace("bg-blue-600", "bg-orange-600");
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            calcularPrevio();
+            limpiar(); mostrarHistorial();
         }
 
         function mostrarHistorial() {
             const lista = document.getElementById('historial');
             const trabajos = JSON.parse(localStorage.getItem('elite_trabajos')) || [];
-            
+            let sumR = 0, sumD = 0, sumS = 0, sumE = 0;
+
             lista.innerHTML = trabajos.map((t, index) => {
                 const pStaff = t.hrs * 18;
-                const cadaUno = ((t.ing - t.gas) * 0.70) / 2;
-                const eNeto = ((t.ing - t.gas) * 0.30) - t.inv;
+                const neta = t.ing - t.gas;
+                const cadaUno = (neta * 0.70) / 2;
+                const eNeto = (neta * 0.30) - t.inv;
+
+                // Sumar a los totales generales
+                sumR += cadaUno; sumD += cadaUno; sumS += pStaff; sumE += eNeto;
 
                 return `
-                <div class="bg-slate-800 p-4 rounded-xl border-l-4 border-blue-500 shadow-md">
+                <div class="bg-slate-800 p-4 rounded-xl border-l-4 border-blue-500">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="text-blue-400 font-bold">${t.fecha}</span>
+                        <span class="text-blue-400 font-bold text-sm">${t.fecha}</span>
                         <span class="text-green-400 font-bold">$${t.ing.toFixed(2)}</span>
                     </div>
                     <div class="grid grid-cols-2 gap-2 text-[10px]">
-                        <div class="bg-slate-700/50 p-2 rounded">DUEÑOS: <b class="text-white">$${cadaUno.toFixed(2)} c/u</b></div>
-                        <div class="bg-slate-700/50 p-2 rounded">STAFF: <b class="text-yellow-400">$${pStaff.toFixed(2)}</b></div>
-                        <div class="bg-slate-700/50 p-2 rounded col-span-2 text-center border border-slate-600">
-                            EMPRESA NETO: <b class="text-blue-300">$${eNeto.toFixed(2)}</b>
-                        </div>
+                        <div>DUEÑOS: <b class="text-white">$${cadaUno.toFixed(2)} c/u</b></div>
+                        <div>STAFF: <b class="text-yellow-400">$${pStaff.toFixed(2)}</b></div>
+                        <div class="col-span-2">EMPRESA NETO: <b class="text-blue-300">$${eNeto.toFixed(2)}</b></div>
                     </div>
-                    <div class="flex gap-4 mt-3">
-                        <button onclick="editarRegistro(${index})" class="text-[10px] text-blue-400 font-bold uppercase tracking-tight">✏️ Editar</button>
-                        <button onclick="borrarUno(${index})" class="text-[10px] text-red-500 font-bold uppercase tracking-tight opacity-70">🗑️ Borrar</button>
+                    <div class="flex gap-4 mt-2">
+                        <button onclick="editarRegistro(${index})" class="text-[10px] text-blue-400 font-bold">✏️ Editar</button>
+                        <button onclick="borrarUno(${index})" class="text-[10px] text-red-500 font-bold">🗑️ Borrar</button>
                     </div>
-                </div>
-                `;
+                </div>`;
             }).join('');
+
+            // Actualizar los 4 cuadros de totales acumulados
+            document.getElementById('totalRodrigo').innerText = '$' + sumR.toFixed(2);
+            document.getElementById('totalDayana').innerText = '$' + sumD.toFixed(2);
+            document.getElementById('totalStaff').innerText = '$' + sumS.toFixed(2);
+            document.getElementById('totalEmpresa').innerText = '$' + sumE.toFixed(2);
         }
 
-        function limpiar() {
-            ids.forEach(id => document.getElementById(id).value = "");
-            document.getElementById('editIndex').value = "-1";
+        function editarRegistro(index) {
+            let trabajos = JSON.parse(localStorage.getItem('elite_trabajos'));
+            const t = trabajos[index];
+            document.getElementById('fecha').value = t.fecha;
+            document.getElementById('ingresos').value = t.ing;
+            document.getElementById('gastosDiarios').value = t.gas;
+            document.getElementById('horas').value = t.hrs;
+            document.getElementById('inversion').value = t.inv;
+            document.getElementById('editIndex').value = index;
+            document.getElementById('btnGuardar').innerText = "ACTUALIZAR REGISTRO";
+            document.getElementById('btnGuardar').classList.replace("bg-blue-600", "bg-orange-600");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             calcularPrevio();
         }
 
+        function resetBotones() {
+            document.getElementById('editIndex').value = "-1";
+            document.getElementById('btnGuardar').innerText = "GUARDAR REGISTRO";
+            document.getElementById('btnGuardar').classList.replace("bg-orange-600", "bg-blue-600");
+        }
+
+        function limpiar() { ids.forEach(id => document.getElementById(id).value = ""); calcularPrevio(); }
+
         function borrarUno(index) {
-            if(confirm("¿Seguro que quieres borrar este trabajo?")) {
+            if(confirm("¿Borrar registro?")) {
                 let trabajos = JSON.parse(localStorage.getItem('elite_trabajos'));
                 trabajos.splice(index, 1);
                 localStorage.setItem('elite_trabajos', JSON.stringify(trabajos));
@@ -171,16 +170,15 @@
 
         function exportarExcel() {
             const trabajos = JSON.parse(localStorage.getItem('elite_trabajos')) || [];
-            if(trabajos.length === 0) return alert("No hay datos");
             const data = trabajos.map(t => ({
                 "Fecha": t.fecha, "Ingresos": t.ing, "Gastos": t.gas, "Horas": t.hrs,
-                "Pago Staff": t.hrs * 18, "Pago Dueño": ((t.ing - t.gas) * 0.70) / 2,
-                "Inversión": t.inv, "Empresa Neto": ((t.ing - t.gas) * 0.30) - t.inv
+                "Pago Staff": t.hrs * 18, "Pago Dueño": ((t.ing-t.gas)*0.7)/2,
+                "Inversión": t.inv, "Empresa Neto": ((t.ing-t.gas)*0.3)-t.inv
             }));
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Contabilidad");
-            XLSX.writeFile(wb, "Elite_Cleaners_Contabilidad.xlsx");
+            XLSX.writeFile(wb, "Elite_Contabilidad.xlsx");
         }
     </script>
 </body>
