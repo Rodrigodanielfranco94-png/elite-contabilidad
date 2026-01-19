@@ -40,6 +40,12 @@
         <button onclick="guardarRegistro()" id="btnGuardar" class="w-full bg-blue-600 py-4 rounded-xl font-bold mt-2 shadow-lg active:scale-95 transition-all uppercase">Guardar Registro</button>
     </div>
 
+    <div class="grid grid-cols-2 gap-2 mb-6">
+        <button onclick="respaldarDatos()" class="bg-slate-700 text-[9px] p-2 rounded-lg border border-slate-600 uppercase font-bold text-slate-300">💾 Crear Backup (Archivo)</button>
+        <button onclick="document.getElementById('importInput').click()" class="bg-slate-700 text-[9px] p-2 rounded-lg border border-slate-600 uppercase font-bold text-slate-300">📂 Restaurar Backup</button>
+        <input type="file" id="importInput" class="hidden" accept=".json" onchange="restaurarDatos(event)">
+    </div>
+
     <h2 class="text-sm font-bold mb-2 text-slate-400 ml-2 uppercase tracking-tighter">Totales Acumulados</h2>
     <div class="grid grid-cols-2 gap-3 mb-8">
         <div class="bg-green-900/30 p-4 rounded-2xl border border-green-500/50 text-center">
@@ -72,9 +78,11 @@
 
         window.onload = function() {
             mostrarHistorial();
-            window.onbeforeunload = function() {
-                return "¿Has exportado tus datos hoy?";
-            };
+            // Aviso de seguridad mejorado
+            window.addEventListener('beforeunload', (event) => {
+                event.preventDefault();
+                event.returnValue = '';
+            });
         };
 
         function formatoMoneda(valor) {
@@ -87,7 +95,7 @@
             const hrs = parseFloat(document.getElementById('horas').value) || 0;
             const inv = parseFloat(document.getElementById('inversion').value) || 0;
 
-            const pStaff = hrs * 16; // Tarifa actualizada a 16
+            const pStaff = hrs * 16;
             const neta = ing - gas;
             const cadaUno = (neta * 0.70) / 2;
             const eNeto = (neta * 0.30) - inv;
@@ -120,9 +128,44 @@
                 resetBotones();
             }
 
+            // Guardado forzado
             localStorage.setItem('elite_trabajos', JSON.stringify(trabajos));
             limpiar();
             mostrarHistorial();
+            alert("✅ Registro guardado con éxito en el celular.");
+        }
+
+        // FUNCIONES DE SEGURIDAD EXTRA
+        function respaldarDatos() {
+            const datos = localStorage.getItem('elite_trabajos');
+            if(!datos || datos === "[]") return alert("No hay datos para respaldar");
+            
+            const blob = new Blob([datos], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Elite_Cleaners_Backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        }
+
+        function restaurarDatos(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const contenido = e.target.result;
+                    JSON.parse(contenido); // Validar que sea JSON
+                    if(confirm("¿Quieres restaurar estos datos? Esto reemplazará lo que tengas ahora.")) {
+                        localStorage.setItem('elite_trabajos', contenido);
+                        mostrarHistorial();
+                        alert("✅ Datos restaurados correctamente.");
+                    }
+                } catch (err) {
+                    alert("Error: El archivo no es un backup válido.");
+                }
+            };
+            reader.readAsText(file);
         }
 
         function mostrarHistorial() {
@@ -134,7 +177,7 @@
                 lista.innerHTML = '<p class="text-center text-slate-500 text-sm py-10 italic">No hay registros guardados aún.</p>';
             } else {
                 lista.innerHTML = trabajos.map((t, index) => {
-                    const pStaff = t.hrs * 16; // Tarifa actualizada a 16
+                    const pStaff = t.hrs * 16;
                     const neta = t.ing - t.gas;
                     const cadaUno = (neta * 0.70) / 2;
                     const eNeto = (neta * 0.30) - t.inv;
