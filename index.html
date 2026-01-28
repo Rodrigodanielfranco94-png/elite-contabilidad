@@ -27,14 +27,15 @@
         <div class="grid grid-cols-2 gap-3">
             <input type="number" id="ingresos" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Ingreso ($)">
             <input type="number" id="gastosDiarios" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Gasto Comida ($)">
-            <input type="number" id="horas" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Horas Staff">
-            <input type="number" id="inversion" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Inversión ($)">
+            <input type="number" id="horas" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Horas Staff 1">
+            <input type="number" id="horas2" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Horas Staff 2">
+            <input type="number" id="inversion" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none" placeholder="Inversión ($) (Gasolina/Líquidos)">
         </div>
 
         <div class="grid grid-cols-2 gap-3 pt-4 border-t border-slate-700">
             <div class="text-center"><p class="text-[9px] text-slate-400 uppercase">Rodrigo (35%)</p><p id="resR" class="text-md font-bold text-green-400">$0.00</p></div>
             <div class="text-center"><p class="text-[9px] text-slate-400 uppercase">Dayana (35%)</p><p id="resD" class="text-md font-bold text-green-400">$0.00</p></div>
-            <div class="text-center"><p class="text-[9px] text-yellow-500 uppercase font-bold">Staff ($16/h)</p><p id="resStaff" class="text-md font-bold text-yellow-500">$0.00</p></div>
+            <div class="text-center"><p class="text-[9px] text-yellow-500 uppercase font-bold">Total Staffs</p><p id="resStaff" class="text-md font-bold text-yellow-500">$0.00</p></div>
             <div class="text-center"><p class="text-[9px] text-blue-400 uppercase font-bold">Empresa Neto</p><p id="resNeto" class="text-md font-bold text-blue-400">$0.00</p></div>
         </div>
         <button onclick="guardarRegistro()" id="btnGuardar" class="w-full bg-blue-600 py-4 rounded-xl font-bold mt-2 shadow-lg active:scale-95 transition-all uppercase">Guardar Registro</button>
@@ -57,7 +58,7 @@
             <p id="totalDayana" class="text-xl font-black text-white">$0.00</p>
         </div>
         <div class="bg-yellow-900/30 p-4 rounded-2xl border border-yellow-500/50 text-center">
-            <p class="text-[10px] text-yellow-500 font-bold uppercase">Total Staff</p>
+            <p class="text-[10px] text-yellow-500 font-bold uppercase">Total Staffs</p>
             <p id="totalStaff" class="text-xl font-black text-white">$0.00</p>
         </div>
         <div class="bg-blue-900/30 p-4 rounded-2xl border border-blue-500/50 text-center">
@@ -73,12 +74,15 @@
     <div id="historial" class="space-y-3"></div>
 
     <script>
-        const ids = ["ingresos", "gastosDiarios", "horas", "inversion", "fecha", "cliente"];
-        ids.forEach(id => document.getElementById(id).addEventListener('input', calcularPrevio));
+        // IDs actualizados para incluir horas2 y gastosDiarios
+        const ids = ["ingresos", "gastosDiarios", "horas", "horas2", "inversion", "fecha", "cliente"];
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.addEventListener('input', calcularPrevio);
+        });
 
         window.onload = function() {
             mostrarHistorial();
-            // Aviso de seguridad mejorado
             window.addEventListener('beforeunload', (event) => {
                 event.preventDefault();
                 event.returnValue = '';
@@ -92,13 +96,21 @@
         function calcularPrevio() {
             const ing = parseFloat(document.getElementById('ingresos').value) || 0;
             const gas = parseFloat(document.getElementById('gastosDiarios').value) || 0;
-            const hrs = parseFloat(document.getElementById('horas').value) || 0;
+            const hrs1 = parseFloat(document.getElementById('horas').value) || 0;
+            const hrs2 = parseFloat(document.getElementById('horas2').value) || 0;
             const inv = parseFloat(document.getElementById('inversion').value) || 0;
 
-            const pStaff = hrs * 16;
-            const neta = ing - gas;
-            const cadaUno = (neta * 0.70) / 2;
-            const eNeto = (neta * 0.30) - inv;
+            // Pago total a Staffs
+            const pStaff = (hrs1 * 16) + (hrs2 * 16);
+            
+            // 5- Gastos de comida divididos (se restan del ingreso bruto antes del reparto)
+            const netoParaReparto = ing - gas; 
+            
+            // Reparto 70% para dueños
+            const cadaUno = (netoParaReparto * 0.70) / 2;
+            
+            // Reparto 30% para empresa neto (menos inversión de materiales/gasolina)
+            const eNeto = (netoParaReparto * 0.30) - inv;
 
             document.getElementById('resR').innerText = formatoMoneda(cadaUno);
             document.getElementById('resD').innerText = formatoMoneda(cadaUno);
@@ -114,6 +126,7 @@
                 ing: parseFloat(document.getElementById('ingresos').value) || 0,
                 gas: parseFloat(document.getElementById('gastosDiarios').value) || 0,
                 hrs: parseFloat(document.getElementById('horas').value) || 0,
+                hrs2: parseFloat(document.getElementById('horas2').value) || 0,
                 inv: parseFloat(document.getElementById('inversion').value) || 0
             };
 
@@ -122,24 +135,24 @@
             let trabajos = JSON.parse(localStorage.getItem('elite_trabajos')) || [];
             
             if (index === -1) {
-                trabajos.unshift(data);
+                trabajos.push(data);
             } else {
                 trabajos[index] = data;
                 resetBotones();
             }
 
-            // Guardado forzado
+            // 3- Organizar por fecha antes de guardar
+            trabajos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
             localStorage.setItem('elite_trabajos', JSON.stringify(trabajos));
             limpiar();
             mostrarHistorial();
-            alert("✅ Registro guardado con éxito en el celular.");
+            alert("✅ Registro guardado con éxito.");
         }
 
-        // FUNCIONES DE SEGURIDAD EXTRA
         function respaldarDatos() {
             const datos = localStorage.getItem('elite_trabajos');
             if(!datos || datos === "[]") return alert("No hay datos para respaldar");
-            
             const blob = new Blob([datos], {type: "application/json"});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -155,7 +168,7 @@
             reader.onload = function(e) {
                 try {
                     const contenido = e.target.result;
-                    JSON.parse(contenido); // Validar que sea JSON
+                    JSON.parse(contenido);
                     if(confirm("¿Quieres restaurar estos datos? Esto reemplazará lo que tengas ahora.")) {
                         localStorage.setItem('elite_trabajos', contenido);
                         mostrarHistorial();
@@ -177,7 +190,7 @@
                 lista.innerHTML = '<p class="text-center text-slate-500 text-sm py-10 italic">No hay registros guardados aún.</p>';
             } else {
                 lista.innerHTML = trabajos.map((t, index) => {
-                    const pStaff = t.hrs * 16;
+                    const pStaff = ((t.hrs || 0) * 16) + ((t.hrs2 || 0) * 16);
                     const neta = t.ing - t.gas;
                     const cadaUno = (neta * 0.70) / 2;
                     const eNeto = (neta * 0.30) - t.inv;
@@ -195,7 +208,7 @@
                         </div>
                         <div class="grid grid-cols-2 gap-2 text-[10px]">
                             <div class="bg-slate-700/50 p-2 rounded">DUEÑOS: <b class="text-white">${formatoMoneda(cadaUno)} c/u</b></div>
-                            <div class="bg-slate-700/50 p-2 rounded">STAFF: <b class="text-yellow-400">${formatoMoneda(pStaff)}</b></div>
+                            <div class="bg-slate-700/50 p-2 rounded">STAFFS: <b class="text-yellow-400">${formatoMoneda(pStaff)}</b></div>
                             <div class="bg-slate-700/50 p-2 rounded col-span-2 text-center border border-slate-600">
                                 EMPRESA NETO: <b class="text-blue-300 font-bold">${formatoMoneda(eNeto)}</b>
                             </div>
@@ -222,6 +235,7 @@
             document.getElementById('ingresos').value = t.ing;
             document.getElementById('gastosDiarios').value = t.gas;
             document.getElementById('horas').value = t.hrs;
+            document.getElementById('horas2').value = t.hrs2 || 0;
             document.getElementById('inversion').value = t.inv;
             document.getElementById('editIndex').value = index;
             document.getElementById('btnGuardar').innerText = "ACTUALIZAR REGISTRO";
@@ -237,12 +251,15 @@
         }
 
         function limpiar() { 
-            ids.forEach(id => document.getElementById(id).value = ""); 
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.value = "";
+            }); 
             calcularPrevio(); 
         }
 
         function borrarUno(index) {
-            if(confirm("¿Estás seguro de que quieres borrar este registro?")) {
+            if(confirm("¿Estás seguro de borrar este registro?")) {
                 let trabajos = JSON.parse(localStorage.getItem('elite_trabajos'));
                 trabajos.splice(index, 1);
                 localStorage.setItem('elite_trabajos', JSON.stringify(trabajos));
@@ -257,9 +274,10 @@
                 "Fecha": t.fecha, 
                 "Cliente": t.cliente || "N/A",
                 "Ingresos": t.ing, 
-                "Gastos": t.gas, 
-                "Horas": t.hrs,
-                "Pago Staff (16/h)": t.hrs * 16, 
+                "Gastos Comida": t.gas, 
+                "Horas Staff 1": t.hrs,
+                "Horas Staff 2": t.hrs2 || 0,
+                "Pago Staffs Total": ((t.hrs || 0) + (t.hrs2 || 0)) * 16, 
                 "Pago Rodrigo": ((t.ing-t.gas)*0.7)/2,
                 "Pago Dayana": ((t.ing-t.gas)*0.7)/2, 
                 "Inversión": t.inv, 
@@ -268,7 +286,7 @@
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Elite_Contabilidad");
-            XLSX.writeFile(wb, "Elite_Cleaners_Backup.xlsx");
+            XLSX.writeFile(wb, "Elite_Cleaners_Historial.xlsx");
         }
     </script>
 </body>
