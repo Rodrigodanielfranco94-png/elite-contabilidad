@@ -3,75 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Cleaners Pro - Seguridad Total</title>
+    <title>Elite Cleaners Pro - Registro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body class="bg-slate-900 text-white p-4 pb-20">
-    <h1 class="text-xl font-bold mb-4 text-center text-blue-400 uppercase tracking-wider">Elite Cleaners - Registro Pro</h1>
+    <h1 class="text-xl font-bold mb-6 text-center text-blue-400 uppercase tracking-wider">Elite Cleaners - Registro Pro</h1>
     
-    <div class="space-y-3 bg-slate-800 p-5 rounded-2xl shadow-xl mb-6 border border-slate-700">
+    <div class="space-y-4 bg-slate-800 p-6 rounded-2xl shadow-xl mb-6 border border-slate-700">
         <input type="hidden" id="editIndex" value="-1">
         
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-4">
             <div class="flex flex-col">
-                <label class="text-[10px] text-slate-400 ml-1 mb-1 uppercase font-bold">Fecha del Trabajo</label>
-                <input type="date" id="fecha" class="w-full bg-slate-700 p-3 rounded-lg text-white border border-slate-600 outline-none h-[50px]">
+                <label class="text-[10px] text-slate-400 ml-1 mb-1.5 uppercase font-bold tracking-tight">Fecha del Trabajo</label>
+                <input type="date" id="fecha" class="w-full bg-slate-700 p-3 rounded-xl text-white border border-slate-600 outline-none h-[52px] focus:border-blue-500 transition-all">
             </div>
             <div class="flex flex-col">
-                <label class="text-[10px] text-slate-400 ml-1 mb-1 uppercase font-bold">Nombre del Cliente</label>
-                <input type="text" id="cliente" class="w-full bg-slate-700 p-3 rounded-lg text-white border border-slate-600 outline-none h-[50px]" placeholder="Nombre">
+                <label class="text-[10px] text-slate-400 ml-1 mb-1.5 uppercase font-bold tracking-tight">Nombre del Cliente</label>
+                <input type="text" id="cliente" class="w-full bg-slate-700 p-3 rounded-xl text-white border border-slate-600 outline-none h-[52px] focus:border-blue-500 transition-all" placeholder="Nombre">
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
-            <input type="number" id="ingresos" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none h-[50px]" placeholder="Ingreso ($)">
-            <input type="number" id="gastosDiarios" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none h-[50px]" placeholder="Gasto Comida ($)">
-            <input type="number" id="horas" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none h-[50px]" placeholder="Horas Staff 1">
-            <input type="number" id="horas2" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none h-[50px]" placeholder="Horas Staff 2">
-            <input type="number" id="inversion" class="bg-slate-700 p-3 rounded-lg border border-slate-600 outline-none h-[50px] col-span-2" placeholder="Inversión ($) (Gasolina/Líquidos)">
+        <div class="grid grid-cols-2 gap-4 pt-2">
+            <div class="flex flex-col">
+                <label class="text-[10px] text-slate-400 ml-1 mb-1.5 uppercase font-bold tracking-tight">Ingreso ($)</label>
+                <input type="number" id="ingresos" class="bg-slate-700 p-3 rounded-xl border border-slate-600 outline-none h-[52px] focus:border-blue-500 transition-all" placeholder="0.00">
+            </div>
+            <div class="flex flex-col">
+                <label class="text-[10px] text-slate-400 ml-1 mb-1.5 uppercase font-bold tracking-tight">Gasto Comida ($)</label>
+                <input type="number" id="gastosDiarios" class="bg-slate-700 p-3 rounded-xl border border-slate-600 outline-none h-[52px] focus:border-blue-500 transition-all" placeholder="0.00">
+            </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 pt-4 border-t border-slate-700">
-            <div class="text-center"><p class="text-[9px] text-slate-400 uppercase">Rodrigo (35%)</p><p id="resR" class="text-md font-bold text-green-400">$0.00</p></div>
-            <div class="text-center"><p class="text-[9px] text-slate-400 uppercase">Dayana (35%)</p><p id="resD" class="text-md font-bold text-green-400">$0.00</p></div>
-            <div class="text-center"><p class="text-[9px] text-yellow-500 uppercase font-bold">Total Staffs</p><p id="resStaff" class="text-md font-bold text-yellow-500">$0.00</p></div>
-            <div class="text-center"><p class="text-[9px] text-blue-400 uppercase font-bold">Empresa Neto</p><p id="resNeto" class="text-md font-bold text-blue-400">$0.00</p></div>
+        <div class="grid grid-cols-2 gap-4 pt-2">
+            <div class="flex flex-col">
+                <label class="text-[10px] text-slate-400 ml-1 mb-1.5 uppercase font-bold tracking-tight">Horas Staff 1</label>
+                <input type="number" id="horas" class="bg-slate-700 p-3 rounded-xl border border-slate-600 outline-none h-[52px] focus:border-blue-500 transition-all" placeholder="0">
+            </div>
+            <div class="flex flex-col">
+                <label class="text-[10px] text-slate-400 ml-1 mb-1.5 uppercase font-bold tracking-tight">Horas Staff 2</label>
+                <input type="number" id="horas2" class="bg-slate-700 p-3 rounded-xl border border-slate-600 outline-none h-[52px] focus:border-blue-500 transition-all" placeholder="0">
+            </div>
         </div>
-        <button onclick="guardarRegistro()" id="btnGuardar" class="w-full bg-blue-600 py-4 rounded-xl font-bold mt-2 shadow-lg active:scale-95 transition-all uppercase">Guardar Registro</button>
+
+        <div class="flex flex-col pt-2">
+            <label class="text-[10px] text-slate-400 ml-1 mb-1.5 uppercase font-bold tracking-tight">Inversión ($) (Gasolina/Líquidos)</label>
+            <input type="number" id="inversion" class="w-full bg-slate-700 p-3 rounded-xl border border-slate-600 outline-none h-[52px] focus:border-blue-500 transition-all" placeholder="0.00">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 pt-6 border-t border-slate-700/50">
+            <div class="text-center bg-slate-900/40 p-2 rounded-lg"><p class="text-[9px] text-slate-400 uppercase">Rodrigo (35%)</p><p id="resR" class="text-md font-bold text-green-400">$0.00</p></div>
+            <div class="text-center bg-slate-900/40 p-2 rounded-lg"><p class="text-[9px] text-slate-400 uppercase">Dayana (35%)</p><p id="resD" class="text-md font-bold text-green-400">$0.00</p></div>
+            <div class="text-center bg-slate-900/40 p-2 rounded-lg"><p class="text-[9px] text-yellow-500 uppercase font-bold">Total Staffs</p><p id="resStaff" class="text-md font-bold text-yellow-500">$0.00</p></div>
+            <div class="text-center bg-slate-900/40 p-2 rounded-lg"><p class="text-[9px] text-blue-400 uppercase font-bold">Empresa Neto</p><p id="resNeto" class="text-md font-bold text-blue-400">$0.00</p></div>
+        </div>
+
+        <button onclick="guardarRegistro()" id="btnGuardar" class="w-full bg-blue-600 py-4 rounded-2xl font-bold mt-4 shadow-lg active:scale-95 transition-all uppercase tracking-widest text-sm">Guardar Registro</button>
     </div>
 
-    <div class="grid grid-cols-2 gap-2 mb-6">
-        <button onclick="respaldarDatos()" class="bg-slate-700 text-[9px] p-2 rounded-lg border border-slate-600 uppercase font-bold text-slate-300">💾 Crear Backup (Archivo)</button>
-        <button onclick="document.getElementById('importInput').click()" class="bg-slate-700 text-[9px] p-2 rounded-lg border border-slate-600 uppercase font-bold text-slate-300">📂 Restaurar Backup</button>
+    <div class="grid grid-cols-2 gap-3 mb-8">
+        <button onclick="respaldarDatos()" class="bg-slate-800 text-[10px] p-3 rounded-xl border border-slate-700 uppercase font-bold text-slate-400 shadow-sm">💾 Crear Backup</button>
+        <button onclick="document.getElementById('importInput').click()" class="bg-slate-800 text-[10px] p-3 rounded-xl border border-slate-700 uppercase font-bold text-slate-400 shadow-sm">📂 Restaurar</button>
         <input type="file" id="importInput" class="hidden" accept=".json" onchange="restaurarDatos(event)">
     </div>
 
-    <h2 class="text-sm font-bold mb-2 text-slate-400 ml-2 uppercase tracking-tighter">Totales Acumulados</h2>
-    <div class="grid grid-cols-2 gap-3 mb-8">
-        <div class="bg-green-900/30 p-4 rounded-2xl border border-green-500/50 text-center">
-            <p class="text-[10px] text-green-400 font-bold uppercase">Total Rodrigo</p>
+    <h2 class="text-xs font-bold mb-3 text-slate-500 ml-2 uppercase tracking-widest">Totales Acumulados</h2>
+    <div class="grid grid-cols-2 gap-4 mb-10">
+        <div class="bg-green-900/20 p-4 rounded-3xl border border-green-500/30 text-center shadow-inner">
+            <p class="text-[10px] text-green-500 font-bold uppercase mb-1">Total Rodrigo</p>
             <p id="totalRodrigo" class="text-xl font-black text-white">$0.00</p>
         </div>
-        <div class="bg-green-900/30 p-4 rounded-2xl border border-green-500/50 text-center">
-            <p class="text-[10px] text-green-400 font-bold uppercase">Total Dayana</p>
+        <div class="bg-green-900/20 p-4 rounded-3xl border border-green-500/30 text-center shadow-inner">
+            <p class="text-[10px] text-green-500 font-bold uppercase mb-1">Total Dayana</p>
             <p id="totalDayana" class="text-xl font-black text-white">$0.00</p>
         </div>
-        <div class="bg-yellow-900/30 p-4 rounded-2xl border border-yellow-500/50 text-center">
-            <p class="text-[10px] text-yellow-500 font-bold uppercase">Total Staffs</p>
+        <div class="bg-yellow-900/20 p-4 rounded-3xl border border-yellow-500/30 text-center shadow-inner">
+            <p class="text-[10px] text-yellow-500 font-bold uppercase mb-1">Total Staffs</p>
             <p id="totalStaff" class="text-xl font-black text-white">$0.00</p>
         </div>
-        <div class="bg-blue-900/30 p-4 rounded-2xl border border-blue-500/50 text-center">
-            <p class="text-[10px] text-blue-400 font-bold uppercase">Total Empresa</p>
+        <div class="bg-blue-900/20 p-4 rounded-3xl border border-blue-500/30 text-center shadow-inner">
+            <p class="text-[10px] text-blue-500 font-bold uppercase mb-1">Total Empresa</p>
             <p id="totalEmpresa" class="text-xl font-black text-white">$0.00</p>
         </div>
     </div>
 
-    <div class="flex justify-between items-center mb-3 px-2 border-t border-slate-800 pt-4">
-        <h2 class="text-lg font-bold text-blue-300 uppercase">Historial</h2>
-        <button onclick="exportarExcel()" class="bg-green-600 text-[10px] px-3 py-2 rounded-lg font-bold uppercase shadow-lg">Exportar Excel</button>
+    <div class="flex justify-between items-center mb-4 px-2">
+        <h2 class="text-lg font-bold text-blue-300 uppercase tracking-tight">Historial</h2>
+        <button onclick="exportarExcel()" class="bg-green-600 text-[10px] px-4 py-2 rounded-xl font-bold uppercase shadow-lg active:scale-95 transition-all">Exportar Excel</button>
     </div>
-    <div id="historial" class="space-y-3"></div>
+    <div id="historial" class="space-y-4"></div>
 
     <script>
         const ids = ["ingresos", "gastosDiarios", "horas", "horas2", "inversion", "fecha", "cliente"];
@@ -82,10 +102,6 @@
 
         window.onload = function() {
             mostrarHistorial();
-            window.addEventListener('beforeunload', (event) => {
-                event.preventDefault();
-                event.returnValue = '';
-            });
         };
 
         function formatoMoneda(valor) {
@@ -122,7 +138,7 @@
                 inv: parseFloat(document.getElementById('inversion').value) || 0
             };
 
-            if(data.ing === 0) return alert("Por favor, ingresa el monto del ingreso");
+            if(data.ing === 0) return alert("Ingresa el monto del ingreso");
 
             let trabajos = JSON.parse(localStorage.getItem('elite_trabajos')) || [];
             
@@ -134,21 +150,19 @@
             }
 
             trabajos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-
             localStorage.setItem('elite_trabajos', JSON.stringify(trabajos));
             limpiar();
             mostrarHistorial();
-            alert("✅ Registro guardado con éxito.");
         }
 
         function respaldarDatos() {
             const datos = localStorage.getItem('elite_trabajos');
-            if(!datos || datos === "[]") return alert("No hay datos para respaldar");
+            if(!datos || datos === "[]") return alert("No hay datos");
             const blob = new Blob([datos], {type: "application/json"});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Elite_Cleaners_Backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `Elite_Backup_${new Date().toISOString().split('T')[0]}.json`;
             a.click();
         }
 
@@ -160,13 +174,11 @@
                 try {
                     const contenido = e.target.result;
                     JSON.parse(contenido);
-                    if(confirm("¿Quieres restaurar estos datos? Esto reemplazará lo que tengas ahora.")) {
-                        localStorage.setItem('elite_trabajos', contenido);
-                        mostrarHistorial();
-                        alert("✅ Datos restaurados correctamente.");
-                    }
+                    localStorage.setItem('elite_trabajos', contenido);
+                    mostrarHistorial();
+                    alert("✅ Restaurado");
                 } catch (err) {
-                    alert("Error: El archivo no es un backup válido.");
+                    alert("Archivo inválido");
                 }
             };
             reader.readAsText(file);
@@ -178,7 +190,7 @@
             let sumR = 0, sumD = 0, sumS = 0, sumE = 0;
 
             if (trabajos.length === 0) {
-                lista.innerHTML = '<p class="text-center text-slate-500 text-sm py-10 italic">No hay registros guardados aún.</p>';
+                lista.innerHTML = '<p class="text-center text-slate-500 text-sm py-10 italic">No hay registros.</p>';
             } else {
                 lista.innerHTML = trabajos.map((t, index) => {
                     const pStaff = ((t.hrs || 0) * 16) + ((t.hrs2 || 0) * 16);
@@ -189,24 +201,24 @@
                     sumR += cadaUno; sumD += cadaUno; sumS += pStaff; sumE += eNeto;
 
                     return `
-                    <div class="bg-slate-800 p-4 rounded-xl border-l-4 border-blue-500 shadow-lg">
-                        <div class="flex justify-between items-start mb-2">
+                    <div class="bg-slate-800 p-5 rounded-2xl border-l-4 border-blue-500 shadow-lg">
+                        <div class="flex justify-between items-start mb-3">
                             <div class="flex flex-col">
                                 <span class="text-blue-400 font-bold text-sm">${t.fecha}</span>
-                                <span class="text-white text-[11px] font-medium italic">Cliente: ${t.cliente}</span>
+                                <span class="text-white text-xs font-medium italic">Cliente: ${t.cliente}</span>
                             </div>
                             <span class="text-green-400 font-bold text-lg">${formatoMoneda(t.ing)}</span>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 text-[10px]">
-                            <div class="bg-slate-700/50 p-2 rounded">DUEÑOS: <b class="text-white">${formatoMoneda(cadaUno)} c/u</b></div>
-                            <div class="bg-slate-700/50 p-2 rounded">STAFFS: <b class="text-yellow-400">${formatoMoneda(pStaff)}</b></div>
-                            <div class="bg-slate-700/50 p-2 rounded col-span-2 text-center border border-slate-600">
+                        <div class="grid grid-cols-2 gap-3 text-[10px]">
+                            <div class="bg-slate-700/40 p-2 rounded-lg">DUEÑOS: <b class="text-white">${formatoMoneda(cadaUno)} c/u</b></div>
+                            <div class="bg-slate-700/40 p-2 rounded-lg">STAFFS: <b class="text-yellow-400">${formatoMoneda(pStaff)}</b></div>
+                            <div class="bg-slate-700/40 p-2 rounded-lg col-span-2 text-center border border-slate-600/30">
                                 EMPRESA NETO: <b class="text-blue-300 font-bold">${formatoMoneda(eNeto)}</b>
                             </div>
                         </div>
-                        <div class="flex gap-6 mt-3 pt-2 border-t border-slate-700/50">
-                            <button onclick="editarRegistro(${index})" class="text-[10px] text-blue-400 font-bold uppercase">✏️ Editar</button>
-                            <button onclick="borrarUno(${index})" class="text-[10px] text-red-500 font-bold uppercase opacity-60">🗑️ Borrar</button>
+                        <div class="flex gap-6 mt-4 pt-3 border-t border-slate-700/50">
+                            <button onclick="editarRegistro(${index})" class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">✏️ Editar</button>
+                            <button onclick="borrarUno(${index})" class="text-[10px] text-red-500 font-bold uppercase tracking-wider opacity-70">🗑️ Borrar</button>
                         </div>
                     </div>`;
                 }).join('');
@@ -229,16 +241,16 @@
             document.getElementById('horas2').value = t.hrs2 || 0;
             document.getElementById('inversion').value = t.inv;
             document.getElementById('editIndex').value = index;
-            document.getElementById('btnGuardar').innerText = "ACTUALIZAR REGISTRO";
-            document.getElementById('btnGuardar').classList.replace("bg-blue-600", "bg-orange-600");
+            document.getElementById('btnGuardar').innerText = "Actualizar Registro";
+            document.getElementById('btnGuardar').className = "w-full bg-orange-600 py-4 rounded-2xl font-bold mt-4 shadow-lg active:scale-95 transition-all uppercase tracking-widest text-sm";
             window.scrollTo({ top: 0, behavior: 'smooth' });
             calcularPrevio();
         }
 
         function resetBotones() {
             document.getElementById('editIndex').value = "-1";
-            document.getElementById('btnGuardar').innerText = "GUARDAR REGISTRO";
-            document.getElementById('btnGuardar').classList.replace("bg-orange-600", "bg-blue-600");
+            document.getElementById('btnGuardar').innerText = "Guardar Registro";
+            document.getElementById('btnGuardar').className = "w-full bg-blue-600 py-4 rounded-2xl font-bold mt-4 shadow-lg active:scale-95 transition-all uppercase tracking-widest text-sm";
         }
 
         function limpiar() { 
@@ -250,7 +262,7 @@
         }
 
         function borrarUno(index) {
-            if(confirm("¿Estás seguro de borrar este registro?")) {
+            if(confirm("¿Borrar este registro?")) {
                 let trabajos = JSON.parse(localStorage.getItem('elite_trabajos'));
                 trabajos.splice(index, 1);
                 localStorage.setItem('elite_trabajos', JSON.stringify(trabajos));
@@ -260,14 +272,12 @@
 
         function exportarExcel() {
             const trabajos = JSON.parse(localStorage.getItem('elite_trabajos')) || [];
-            if(trabajos.length === 0) return alert("No hay datos para exportar");
+            if(trabajos.length === 0) return alert("No hay datos");
             const data = trabajos.map(t => ({
                 "Fecha": t.fecha, 
                 "Cliente": t.cliente || "N/A",
                 "Ingresos": t.ing, 
                 "Gastos Comida": t.gas, 
-                "Horas Staff 1": t.hrs,
-                "Horas Staff 2": t.hrs2 || 0,
                 "Pago Staffs Total": ((t.hrs || 0) + (t.hrs2 || 0)) * 16, 
                 "Pago Rodrigo": ((t.ing-t.gas)*0.7)/2,
                 "Pago Dayana": ((t.ing-t.gas)*0.7)/2, 
@@ -276,8 +286,8 @@
             }));
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Elite_Contabilidad");
-            XLSX.writeFile(wb, "Elite_Cleaners_Historial.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Contabilidad");
+            XLSX.writeFile(wb, "Elite_Historial.xlsx");
         }
     </script>
 </body>
