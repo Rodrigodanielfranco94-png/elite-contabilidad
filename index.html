@@ -91,7 +91,15 @@
         <h2 class="text-lg font-bold text-blue-300 uppercase tracking-tight">Historial</h2>
         <button onclick="exportarExcel()" class="bg-green-600 text-[10px] px-4 py-2 rounded-xl font-bold uppercase shadow-lg active:scale-95 transition-all">Exportar Excel</button>
     </div>
-    <div id="historial" class="space-y-4"></div>
+    
+    <div id="historial" class="space-y-4 mb-10"></div>
+
+    <div class="mt-10 pt-10 border-t border-slate-800">
+        <button onclick="reiniciarMes()" class="w-full bg-red-900/40 text-red-400 border border-red-500/50 py-4 rounded-2xl font-bold text-xs uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all">
+            🚨 Reiniciar Mes (Cierre de Contabilidad)
+        </button>
+        <p class="text-[9px] text-slate-500 text-center mt-3 uppercase">Esta acción guardará un reporte y borrará el historial actual</p>
+    </div>
 
     <script>
         const ids = ["ingresos", "gastosDiarios", "horas", "horas2", "inversion", "fecha", "cliente"];
@@ -287,7 +295,25 @@
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Contabilidad");
-            XLSX.writeFile(wb, "Elite_Historial.xlsx");
+            XLSX.writeFile(wb, `Elite_Reporte_${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+
+        // --- FUNCIÓN DE CIERRE DE MES ---
+        function reiniciarMes() {
+            const trabajos = JSON.parse(localStorage.getItem('elite_trabajos')) || [];
+            if(trabajos.length === 0) return alert("No hay datos para cerrar.");
+
+            if(confirm("⚠️ ATENCIÓN: Se descargará un Excel con el historial y se borrarán todos los registros para iniciar el mes en $0.00.\n\n¿Deseas continuar?")) {
+                // 1. Exportar el Excel primero por seguridad
+                exportarExcel();
+
+                // 2. Borrar del localStorage
+                localStorage.removeItem('elite_trabajos');
+
+                // 3. Limpiar vista y mostrar historial vacío
+                mostrarHistorial();
+                alert("✅ Mes reiniciado con éxito. Reporte descargado.");
+            }
         }
     </script>
 </body>
