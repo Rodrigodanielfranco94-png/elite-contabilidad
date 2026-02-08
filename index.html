@@ -52,14 +52,18 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4 pt-6 border-t border-slate-700/50">
-            <div class="text-center bg-slate-900/40 p-2 rounded-lg"><p class="text-[9px] text-slate-400 uppercase">Rodrigo (35%)</p><p id="resR" class="text-md font-bold text-green-400">$0.00</p></div>
-            <div class="text-center bg-slate-900/40 p-2 rounded-lg"><p class="text-[9px] text-slate-400 uppercase">Dayana (35%)</p><p id="resD" class="text-md font-bold text-green-400">$0.00</p></div>
+            <div class="text-center bg-slate-900/40 p-2 rounded-lg">
+                <p class="text-[9px] text-slate-400 uppercase">Rodrigo (35%)</p>
+                <p id="resR" class="text-md font-bold text-green-400">$0.00</p>
+                <p class="text-[8px] text-slate-500 uppercase mt-1 italic">Ya descontada comida</p>
+            </div>
+            <div class="text-center bg-slate-900/40 p-2 rounded-lg">
+                <p class="text-[9px] text-slate-400 uppercase">Dayana (35%)</p>
+                <p id="resD" class="text-md font-bold text-green-400">$0.00</p>
+                <p class="text-[8px] text-slate-500 uppercase mt-1 italic">Ya descontada comida</p>
+            </div>
             <div class="text-center bg-slate-900/40 p-2 rounded-lg"><p class="text-[9px] text-yellow-500 uppercase font-bold">Total Staffs</p><p id="resStaff" class="text-md font-bold text-yellow-500">$0.00</p></div>
             <div class="text-center bg-slate-900/40 p-2 rounded-lg"><p class="text-[9px] text-blue-400 uppercase font-bold">Empresa Neto</p><p id="resNeto" class="text-md font-bold text-blue-400">$0.00</p></div>
-            <div class="text-center bg-slate-900/40 p-2 rounded-lg col-span-2 border border-slate-700/50 mt-1">
-                <p class="text-[9px] text-purple-400 uppercase font-bold">Descuento Comida c/u (Dayana, Rodrigo, Geral)</p>
-                <p id="resComidaIndividual" class="text-sm font-bold text-red-400">$0.00</p>
-            </div>
         </div>
 
         <button onclick="guardarRegistro()" id="btnGuardar" class="w-full bg-blue-600 py-4 rounded-2xl font-bold mt-4 shadow-lg active:scale-95 transition-all uppercase tracking-widest text-sm">Guardar Registro</button>
@@ -122,31 +126,26 @@
 
         function calcularPrevio() {
             const ing = parseFloat(document.getElementById('ingresos').value) || 0;
-            const gasTotal = parseFloat(document.getElementById('gastosDiarios').value) || 0;
+            const gasComida = parseFloat(document.getElementById('gastosDiarios').value) || 0;
             const hrs1 = parseFloat(document.getElementById('horas').value) || 0;
             const hrs2 = parseFloat(document.getElementById('horas2').value) || 0;
             const inv = parseFloat(document.getElementById('inversion').value) || 0;
 
             const pStaff = (hrs1 * 16) + (hrs2 * 16);
             
-            // Lógica corregida: 
-            // 1. La comida se divide entre 3 (Dayana, Rodrigo, Geral)
-            const descuentoComidaIndividual = gasTotal / 3;
+            // Lógica: La comida se divide entre 3 (Dayana, Rodrigo y Geral)
+            const descuentoIndividual = gasComida / 3;
             
-            // 2. Cálculo de reparto sobre el ingreso bruto (70% para dueños, 30% empresa)
-            // Descontamos la parte de comida que le toca a cada dueño de su 35%
-            const parteBrutaDueño = (ing * 0.35); 
-            const pagoNetoRodrigo = parteBrutaDueño - descuentoComidaIndividual;
-            const pagoNetoDayana = parteBrutaDueño - descuentoComidaIndividual;
+            // El 35% de cada dueño, menos su parte de la comida
+            const cadaUnoFinal = (ing * 0.35) - descuentoIndividual;
             
-            // 3. Empresa paga la inversión
+            // Empresa neta sigue siendo el 30% menos inversión
             const eNeto = (ing * 0.30) - inv;
 
-            document.getElementById('resR').innerText = formatoMoneda(pagoNetoRodrigo);
-            document.getElementById('resD').innerText = formatoMoneda(pagoNetoDayana);
+            document.getElementById('resR').innerText = formatoMoneda(cadaUnoFinal);
+            document.getElementById('resD').innerText = formatoMoneda(cadaUnoFinal);
             document.getElementById('resStaff').innerText = formatoMoneda(pStaff);
             document.getElementById('resNeto').innerText = formatoMoneda(eNeto);
-            document.getElementById('resComidaIndividual').innerText = formatoMoneda(descuentoComidaIndividual);
         }
 
         function guardarRegistro() {
@@ -178,35 +177,6 @@
             mostrarHistorial();
         }
 
-        function respaldarDatos() {
-            const datos = localStorage.getItem('elite_trabajos');
-            if(!datos || datos === "[]") return alert("No hay datos");
-            const blob = new Blob([datos], {type: "application/json"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Elite_Backup_${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-        }
-
-        function restaurarDatos(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const contenido = e.target.result;
-                    JSON.parse(contenido);
-                    localStorage.setItem('elite_trabajos', contenido);
-                    mostrarHistorial();
-                    alert("✅ Restaurado");
-                } catch (err) {
-                    alert("Archivo inválido");
-                }
-            };
-            reader.readAsText(file);
-        }
-
         function mostrarHistorial() {
             const lista = document.getElementById('historial');
             const trabajos = JSON.parse(localStorage.getItem('elite_trabajos')) || [];
@@ -218,12 +188,12 @@
                 lista.innerHTML = trabajos.map((t, index) => {
                     const pStaff = ((t.hrs || 0) * 16) + ((t.hrs2 || 0) * 16);
                     
-                    const descComida = (t.gas || 0) / 3;
-                    const pagoR = (t.ing * 0.35) - descComida;
-                    const pagoD = (t.ing * 0.35) - descComida;
+                    // APLICACIÓN AUTOMÁTICA DEL DESCUENTO
+                    const descIndiv = (t.gas || 0) / 3;
+                    const netoDueño = (t.ing * 0.35) - descIndiv;
                     const eNeto = (t.ing * 0.30) - t.inv;
 
-                    sumR += pagoR; sumD += pagoD; sumS += pStaff; sumE += eNeto;
+                    sumR += netoDueño; sumD += netoDueño; sumS += pStaff; sumE += eNeto;
 
                     return `
                     <div class="bg-slate-800 p-5 rounded-2xl border-l-4 border-blue-500 shadow-lg">
@@ -235,12 +205,13 @@
                             <span class="text-green-400 font-bold text-lg">${formatoMoneda(t.ing)}</span>
                         </div>
                         <div class="grid grid-cols-2 gap-3 text-[10px]">
-                            <div class="bg-slate-700/40 p-2 rounded-lg">RODRIGO: <b class="text-white">${formatoMoneda(pagoR)}</b></div>
-                            <div class="bg-slate-700/40 p-2 rounded-lg">DAYANA: <b class="text-white">${formatoMoneda(pagoD)}</b></div>
-                            <div class="bg-slate-700/40 p-2 rounded-lg">STAFFS: <b class="text-yellow-400">${formatoMoneda(pStaff)}</b></div>
-                            <div class="bg-slate-700/40 p-2 rounded-lg">COMIDA c/u: <b class="text-red-400">${formatoMoneda(descComida)}</b></div>
+                            <div class="bg-slate-700/40 p-2 rounded-lg">PAGO RODRIGO: <b class="text-white font-bold">${formatoMoneda(netoDueño)}</b></div>
+                            <div class="bg-slate-700/40 p-2 rounded-lg">PAGO DAYANA: <b class="text-white font-bold">${formatoMoneda(netoDueño)}</b></div>
                             <div class="bg-slate-700/40 p-2 rounded-lg col-span-2 text-center border border-slate-600/30">
-                                EMPRESA NETO: <b class="text-blue-300 font-bold">${formatoMoneda(eNeto)}</b>
+                                COMIDA TOTAL: <b class="text-red-400">${formatoMoneda(t.gas)}</b> | DESC. CADA UNO: <b class="text-red-400">-${formatoMoneda(descIndiv)}</b>
+                            </div>
+                            <div class="bg-slate-900/60 p-2 rounded-lg col-span-2 text-center border border-blue-500/20">
+                                EMPRESA NETO: <b class="text-blue-300">${formatoMoneda(eNeto)}</b>
                             </div>
                         </div>
                         <div class="flex gap-6 mt-4 pt-3 border-t border-slate-700/50">
@@ -257,6 +228,7 @@
             document.getElementById('totalEmpresa').innerText = formatoMoneda(sumE);
         }
 
+        // Las demás funciones de soporte (editar, borrar, exportar, etc.) permanecen idénticas al original
         function editarRegistro(index) {
             let trabajos = JSON.parse(localStorage.getItem('elite_trabajos'));
             const t = trabajos[index];
@@ -297,24 +269,50 @@
             }
         }
 
+        function respaldarDatos() {
+            const datos = localStorage.getItem('elite_trabajos');
+            if(!datos || datos === "[]") return alert("No hay datos");
+            const blob = new Blob([datos], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Elite_Backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        }
+
+        function restaurarDatos(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const contenido = e.target.result;
+                    JSON.parse(contenido);
+                    localStorage.setItem('elite_trabajos', contenido);
+                    mostrarHistorial();
+                    alert("✅ Restaurado");
+                } catch (err) {
+                    alert("Archivo inválido");
+                }
+            };
+            reader.readAsText(file);
+        }
+
         function exportarExcel() {
             const trabajos = JSON.parse(localStorage.getItem('elite_trabajos')) || [];
             if(trabajos.length === 0) return alert("No hay datos");
-            const data = trabajos.map(t => {
-                const descComida = (t.gas || 0) / 3;
-                return {
-                    "Fecha": t.fecha, 
-                    "Cliente": t.cliente || "N/A",
-                    "Ingresos": t.ing, 
-                    "Gasto Comida Total": t.gas,
-                    "Descuento Comida c/u": descComida,
-                    "Pago Staffs Total": ((t.hrs || 0) + (t.hrs2 || 0)) * 16, 
-                    "Pago Rodrigo (Neto)": (t.ing * 0.35) - descComida,
-                    "Pago Dayana (Neto)": (t.ing * 0.35) - descComida, 
-                    "Inversión": t.inv, 
-                    "Empresa Neto": (t.ing * 0.30) - t.inv
-                }
-            });
+            const data = trabajos.map(t => ({
+                "Fecha": t.fecha, 
+                "Cliente": t.cliente || "N/A",
+                "Ingresos": t.ing, 
+                "Gastos Comida Total": t.gas, 
+                "Descuento Comida c/u": (t.gas / 3),
+                "Pago Staffs Total": ((t.hrs || 0) + (t.hrs2 || 0)) * 16, 
+                "Pago Rodrigo (Neto)": (t.ing * 0.35) - (t.gas / 3),
+                "Pago Dayana (Neto)": (t.ing * 0.35) - (t.gas / 3), 
+                "Inversión": t.inv, 
+                "Empresa Neto": (t.ing * 0.30) - t.inv
+            }));
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Contabilidad");
