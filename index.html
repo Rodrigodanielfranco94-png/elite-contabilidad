@@ -56,6 +56,10 @@
             <div class="text-center bg-slate-900/40 p-2 rounded-lg"><p class="text-[9px] text-slate-400 uppercase">Dayana (35%)</p><p id="resD" class="text-md font-bold text-green-400">$0.00</p></div>
             <div class="text-center bg-slate-900/40 p-2 rounded-lg"><p class="text-[9px] text-yellow-500 uppercase font-bold">Total Staffs</p><p id="resStaff" class="text-md font-bold text-yellow-500">$0.00</p></div>
             <div class="text-center bg-slate-900/40 p-2 rounded-lg"><p class="text-[9px] text-blue-400 uppercase font-bold">Empresa Neto</p><p id="resNeto" class="text-md font-bold text-blue-400">$0.00</p></div>
+            <div class="text-center bg-slate-900/40 p-2 rounded-lg col-span-2 border border-slate-700/50 mt-1">
+                <p class="text-[9px] text-purple-400 uppercase font-bold">Descuento Comida c/u (Dayana, Rodrigo, Geral)</p>
+                <p id="resComidaIndividual" class="text-sm font-bold text-red-400">$0.00</p>
+            </div>
         </div>
 
         <button onclick="guardarRegistro()" id="btnGuardar" class="w-full bg-blue-600 py-4 rounded-2xl font-bold mt-4 shadow-lg active:scale-95 transition-all uppercase tracking-widest text-sm">Guardar Registro</button>
@@ -118,20 +122,31 @@
 
         function calcularPrevio() {
             const ing = parseFloat(document.getElementById('ingresos').value) || 0;
-            const gas = parseFloat(document.getElementById('gastosDiarios').value) || 0;
+            const gasTotal = parseFloat(document.getElementById('gastosDiarios').value) || 0;
             const hrs1 = parseFloat(document.getElementById('horas').value) || 0;
             const hrs2 = parseFloat(document.getElementById('horas2').value) || 0;
             const inv = parseFloat(document.getElementById('inversion').value) || 0;
 
             const pStaff = (hrs1 * 16) + (hrs2 * 16);
-            const netoParaReparto = ing - gas; 
-            const cadaUno = (netoParaReparto * 0.70) / 2;
-            const eNeto = (netoParaReparto * 0.30) - inv;
+            
+            // Lógica corregida: 
+            // 1. La comida se divide entre 3 (Dayana, Rodrigo, Geral)
+            const descuentoComidaIndividual = gasTotal / 3;
+            
+            // 2. Cálculo de reparto sobre el ingreso bruto (70% para dueños, 30% empresa)
+            // Descontamos la parte de comida que le toca a cada dueño de su 35%
+            const parteBrutaDueño = (ing * 0.35); 
+            const pagoNetoRodrigo = parteBrutaDueño - descuentoComidaIndividual;
+            const pagoNetoDayana = parteBrutaDueño - descuentoComidaIndividual;
+            
+            // 3. Empresa paga la inversión
+            const eNeto = (ing * 0.30) - inv;
 
-            document.getElementById('resR').innerText = formatoMoneda(cadaUno);
-            document.getElementById('resD').innerText = formatoMoneda(cadaUno);
+            document.getElementById('resR').innerText = formatoMoneda(pagoNetoRodrigo);
+            document.getElementById('resD').innerText = formatoMoneda(pagoNetoDayana);
             document.getElementById('resStaff').innerText = formatoMoneda(pStaff);
             document.getElementById('resNeto').innerText = formatoMoneda(eNeto);
+            document.getElementById('resComidaIndividual').innerText = formatoMoneda(descuentoComidaIndividual);
         }
 
         function guardarRegistro() {
@@ -202,11 +217,13 @@
             } else {
                 lista.innerHTML = trabajos.map((t, index) => {
                     const pStaff = ((t.hrs || 0) * 16) + ((t.hrs2 || 0) * 16);
-                    const neta = t.ing - t.gas;
-                    const cadaUno = (neta * 0.70) / 2;
-                    const eNeto = (neta * 0.30) - t.inv;
+                    
+                    const descComida = (t.gas || 0) / 3;
+                    const pagoR = (t.ing * 0.35) - descComida;
+                    const pagoD = (t.ing * 0.35) - descComida;
+                    const eNeto = (t.ing * 0.30) - t.inv;
 
-                    sumR += cadaUno; sumD += cadaUno; sumS += pStaff; sumE += eNeto;
+                    sumR += pagoR; sumD += pagoD; sumS += pStaff; sumE += eNeto;
 
                     return `
                     <div class="bg-slate-800 p-5 rounded-2xl border-l-4 border-blue-500 shadow-lg">
@@ -218,8 +235,10 @@
                             <span class="text-green-400 font-bold text-lg">${formatoMoneda(t.ing)}</span>
                         </div>
                         <div class="grid grid-cols-2 gap-3 text-[10px]">
-                            <div class="bg-slate-700/40 p-2 rounded-lg">DUEÑOS: <b class="text-white">${formatoMoneda(cadaUno)} c/u</b></div>
+                            <div class="bg-slate-700/40 p-2 rounded-lg">RODRIGO: <b class="text-white">${formatoMoneda(pagoR)}</b></div>
+                            <div class="bg-slate-700/40 p-2 rounded-lg">DAYANA: <b class="text-white">${formatoMoneda(pagoD)}</b></div>
                             <div class="bg-slate-700/40 p-2 rounded-lg">STAFFS: <b class="text-yellow-400">${formatoMoneda(pStaff)}</b></div>
+                            <div class="bg-slate-700/40 p-2 rounded-lg">COMIDA c/u: <b class="text-red-400">${formatoMoneda(descComida)}</b></div>
                             <div class="bg-slate-700/40 p-2 rounded-lg col-span-2 text-center border border-slate-600/30">
                                 EMPRESA NETO: <b class="text-blue-300 font-bold">${formatoMoneda(eNeto)}</b>
                             </div>
@@ -281,36 +300,34 @@
         function exportarExcel() {
             const trabajos = JSON.parse(localStorage.getItem('elite_trabajos')) || [];
             if(trabajos.length === 0) return alert("No hay datos");
-            const data = trabajos.map(t => ({
-                "Fecha": t.fecha, 
-                "Cliente": t.cliente || "N/A",
-                "Ingresos": t.ing, 
-                "Gastos Comida": t.gas, 
-                "Pago Staffs Total": ((t.hrs || 0) + (t.hrs2 || 0)) * 16, 
-                "Pago Rodrigo": ((t.ing-t.gas)*0.7)/2,
-                "Pago Dayana": ((t.ing-t.gas)*0.7)/2, 
-                "Inversión": t.inv, 
-                "Empresa Neto": ((t.ing-t.gas)*0.3)-t.inv
-            }));
+            const data = trabajos.map(t => {
+                const descComida = (t.gas || 0) / 3;
+                return {
+                    "Fecha": t.fecha, 
+                    "Cliente": t.cliente || "N/A",
+                    "Ingresos": t.ing, 
+                    "Gasto Comida Total": t.gas,
+                    "Descuento Comida c/u": descComida,
+                    "Pago Staffs Total": ((t.hrs || 0) + (t.hrs2 || 0)) * 16, 
+                    "Pago Rodrigo (Neto)": (t.ing * 0.35) - descComida,
+                    "Pago Dayana (Neto)": (t.ing * 0.35) - descComida, 
+                    "Inversión": t.inv, 
+                    "Empresa Neto": (t.ing * 0.30) - t.inv
+                }
+            });
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Contabilidad");
             XLSX.writeFile(wb, `Elite_Reporte_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
 
-        // --- FUNCIÓN DE CIERRE DE MES ---
         function reiniciarMes() {
             const trabajos = JSON.parse(localStorage.getItem('elite_trabajos')) || [];
             if(trabajos.length === 0) return alert("No hay datos para cerrar.");
 
             if(confirm("⚠️ ATENCIÓN: Se descargará un Excel con el historial y se borrarán todos los registros para iniciar el mes en $0.00.\n\n¿Deseas continuar?")) {
-                // 1. Exportar el Excel primero por seguridad
                 exportarExcel();
-
-                // 2. Borrar del localStorage
                 localStorage.removeItem('elite_trabajos');
-
-                // 3. Limpiar vista y mostrar historial vacío
                 mostrarHistorial();
                 alert("✅ Mes reiniciado con éxito. Reporte descargado.");
             }
