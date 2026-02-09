@@ -47,7 +47,7 @@
         </div>
 
         <div class="flex flex-col pt-2">
-            <label class="text-[10px] text-slate-400 ml-1 mb-1.5 uppercase font-bold tracking-tight">Inversión ($) (Gasolina/Líquidos)</label>
+            <label class="text-[10px] text-slate-400 ml-1 mb-1.5 uppercase font-bold tracking-tight">Inversión ($) (Solo resta a Empresa)</label>
             <input type="number" id="inversion" class="w-full bg-slate-700 p-3 rounded-xl border border-slate-600 outline-none h-[52px] focus:border-blue-500 transition-all" placeholder="0.00">
         </div>
 
@@ -124,7 +124,6 @@
             return '$' + valor.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        // FUNCIÓN DE CÁLCULO CORE CORREGIDA
         function calcularPrevio() {
             const ing = parseFloat(document.getElementById('ingresos').value) || 0;
             const gasComidaTotal = parseFloat(document.getElementById('gastosDiarios').value) || 0;
@@ -133,15 +132,13 @@
             const inv = parseFloat(document.getElementById('inversion').value) || 0;
 
             const pStaff = (hrs1 * 16) + (hrs2 * 16);
-            
-            // 1. Dividir la comida entre 3 (Rodrigo, Dayana, Geral)
             const gastoPorPersona = gasComidaTotal / 3;
 
-            // 2. Calcular el 35% de ingreso bruto y RESTAR la comida
+            // Rodrigo y Dayana: 35% cada uno MENOS su parte de la comida (Inversión NO les afecta)
             const pagoRodrigo = (ing * 0.35) - gastoPorPersona;
             const pagoDayana = (ing * 0.35) - gastoPorPersona;
             
-            // 3. Empresa neta (30% menos gasolina/líquidos)
+            // Empresa: 30% del ingreso MENOS el total de la inversión (gasolina/líquidos)
             const eNeto = (ing * 0.30) - inv;
 
             document.getElementById('resR').innerText = formatoMoneda(pagoRodrigo);
@@ -189,9 +186,8 @@
             } else {
                 lista.innerHTML = trabajos.map((t, index) => {
                     const pStaff = ((t.hrs || 0) * 16) + ((t.hrs2 || 0) * 16);
-                    
-                    // REPETIMOS LA LÓGICA DE RESTA PARA EL HISTORIAL
                     const gastoIndiv = (t.gas || 0) / 3;
+                    
                     const netoR = (t.ing * 0.35) - gastoIndiv;
                     const netoD = (t.ing * 0.35) - gastoIndiv;
                     const eNeto = (t.ing * 0.30) - t.inv;
@@ -214,7 +210,7 @@
                                 COMIDA TOTAL: ${formatoMoneda(t.gas)} (Desc. c/u: -${formatoMoneda(gastoIndiv)})
                             </div>
                             <div class="bg-slate-700/40 p-2 rounded-lg col-span-2 text-center border border-slate-600/30 font-bold text-blue-300">
-                                EMPRESA NETO: ${formatoMoneda(eNeto)}
+                                EMPRESA NETO: ${formatoMoneda(eNeto)} <span class="text-[8px] text-slate-400">(Inv. restada aquí)</span>
                             </div>
                         </div>
                         <div class="flex gap-6 mt-4 pt-3 border-t border-slate-700/50">
@@ -231,7 +227,6 @@
             document.getElementById('totalEmpresa').innerText = formatoMoneda(sumE);
         }
 
-        // --- LAS DEMÁS FUNCIONES SE MANTIENEN IGUAL ---
         function editarRegistro(index) {
             let trabajos = JSON.parse(localStorage.getItem('elite_trabajos'));
             const t = trabajos[index];
@@ -307,7 +302,7 @@
                 "Pago Rodrigo (Neto)": (t.ing * 0.35) - (t.gas / 3),
                 "Pago Dayana (Neto)": (t.ing * 0.35) - (t.gas / 3), 
                 "Pago Staffs Total": ((t.hrs || 0) + (t.hrs2 || 0)) * 16, 
-                "Inversión Gas/Liq": t.inv, 
+                "Inversión (Solo Empresa)": t.inv, 
                 "Empresa Neto": (t.ing * 0.30) - t.inv
             }));
             const ws = XLSX.utils.json_to_sheet(data);
